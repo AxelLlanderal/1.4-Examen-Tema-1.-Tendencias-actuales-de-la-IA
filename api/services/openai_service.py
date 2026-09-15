@@ -30,7 +30,7 @@ class OpenAITranslatorService:
         # 1. Transcribir audio con Whisper
         transcription = self.client.audio.transcriptions.create(
             model="whisper-1",
-            file=(filename, audio_file_bytes)
+            file=(filename, audio_file_bytes, "audio/mpeg")
         )
         original_text = transcription.text
 
