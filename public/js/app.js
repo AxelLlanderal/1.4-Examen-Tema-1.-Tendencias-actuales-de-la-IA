@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Reemplazar con la URL real desplegada en Vercel
-    const API_URL = 'https://tu-proyecto.vercel.app'; 
+    const API_URL = 'https://1-4-examen-tema-1-tendencias-actual.vercel.app/'; 
     const apiService = new ApiService(API_URL);
 
     // Inicializar módulo de Chat
