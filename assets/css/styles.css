@@ -87,6 +87,17 @@ footer p {
     background-color: var(--card-bg) !important;
     border-color: var(--border-color) !important;
 }
+/* Forzar contraste alto en las traducciones del chat */
+#chat-history .text-muted,
+#chat-history p,
+#chat-history small,
+#chat-history span {
+    color: #e2e8f0 !important; /* Gris claro de alto contraste */
+}
+
+#chat-history strong {
+    color: #38bdf8 !important; /* Azul neón brillante para los encabezados como "Traducción:" */
+}
 
 /* Inputs, Selects y Botón de archivo */
 .form-control, .form-select {
