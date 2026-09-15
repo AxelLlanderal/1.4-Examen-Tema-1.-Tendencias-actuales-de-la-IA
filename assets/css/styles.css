@@ -1,143 +1,129 @@
-/* Variables Globales */
+/* Variables para Tema Oscuro Profesional */
 :root {
-    --primary-color: #4f46e5;
-    --primary-hover: #4338ca;
-    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-    --card-bg: #ffffff;
-    --text-main: #1e293b;
-    --text-muted: #64748b;
-    --border-color: #e2e8f0;
+    --bg-main: #0f172a;           /* Fondo principal oscuro */
+    --card-bg: #1e293b;           /* Contenedor ligeramente más claro */
+    --input-bg: #334155;          /* Fondo de inputs y cajas */
+    --text-primary: #f8fafc;      /* Texto principal blanco */
+    --text-muted: #94a3b8;        /* Texto secundario */
+    --accent: #6366f1;            /* Morado neón/índigo */
+    --accent-hover: #4f46e5;
+    --border-color: #334155;
     --radius-lg: 16px;
     --radius-md: 10px;
-    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 body {
-    background: var(--bg-gradient);
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-    color: var(--text-main);
+    background-color: var(--bg-main) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-primary);
     min-height: 100vh;
 }
 
-/* Tarjeta Principal del Contenedor */
-.container {
-    max-width: 900px;
+/* Navbar y Footer */
+.navbar, footer {
+    background-color: #0b0f19 !important;
+    border-bottom: 1px solid var(--border-color);
+}
+footer {
+    border-top: 1px solid var(--border-color);
+    border-bottom: none;
 }
 
+/* Encapsulador principal */
 .card {
-    background-color: var(--card-bg);
+    background-color: var(--card-bg) !important;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
 }
 
-/* Navegación por Pestañas (Pills) */
+/* Pestañas de Navegación */
 .nav-pills {
-    background: #f1f5f9;
+    background-color: #0f172a;
     padding: 6px;
     border-radius: var(--radius-lg);
-    gap: 4px;
 }
 
 .nav-pills .nav-link {
     color: var(--text-muted);
     font-weight: 600;
-    font-size: 0.95rem;
     border-radius: var(--radius-md);
-    padding: 10px 16px;
     transition: all 0.2s ease;
 }
 
 .nav-pills .nav-link:hover {
-    color: var(--primary-color);
-    background-color: rgba(79, 70, 229, 0.05);
+    color: var(--text-primary);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .nav-pills .nav-link.active {
-    background-color: var(--primary-color);
+    background-color: var(--accent);
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
 }
 
-/* Historial del Chat */
+/* Caja del Historial del Chat */
 #chat-history {
-    background-color: #f8fafc;
+    background-color: var(--input-bg) !important;
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
     padding: 16px;
-    max-height: 420px;
+    min-height: 380px;
+    max-height: 450px;
     overflow-y: auto;
+    color: var(--text-primary);
 }
 
-/* Scrollbar Personalizado */
-#chat-history::-webkit-scrollbar {
-    width: 6px;
-}
-#chat-history::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 10px;
+/* Personalización de los Globos de Texto en el Chat */
+.border-primary, .border-success {
+    background-color: #1e293b !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
 }
 
-/* Botones e Inputs */
-.btn-primary {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    padding: 10px 20px;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-hover);
-    border-color: var(--primary-hover);
-    transform: translateY(-1px);
-}
-
+/* Inputs y Selects */
 .form-control, .form-select {
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
     border-radius: var(--radius-md);
-    border: 1px solid var(--border-color);
-    padding: 10px 14px;
-    font-size: 0.95rem;
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
 }
 
 .form-control:focus, .form-select:focus {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
 }
 
-/* Módulos de Documentos e Imágenes */
-#doc-translated-content, #img-translated-text {
-    white-space: pre-wrap;
-    word-break: break-word;
-    background-color: #f8fafc;
-    border: 1px solid var(--border-color);
+/* Botones */
+.btn-primary {
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
     border-radius: var(--radius-md);
-    padding: 16px;
-    font-size: 0.95rem;
-    color: var(--text-main);
+    font-weight: 600;
 }
 
-/* Adaptación Responsiva para Celulares */
-@media (max-width: 576px) {
-    body {
-        padding: 10px 0;
-    }
+.btn-primary:hover {
+    background-color: var(--accent-hover) !important;
+}
 
-    .nav-pills .nav-link {
-        font-size: 0.85rem;
-        padding: 8px 10px;
-        text-align: center;
-    }
+/* Resultados de Documentos, Imagen y Audio */
+#doc-translated-content, #img-translated-text, #audio-original, #audio-translated {
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    border-radius: var(--radius-md);
+}
 
-    #chat-history {
-        max-height: 320px;
-    }
-
-    .btn-primary {
-        width: 100%;
-        margin-top: 8px;
-    }
+/* Banner de Alerta */
+.alert-warning {
+    background-color: #312e81 !important;
+    color: #e0e7ff !important;
+    border: 1px solid #4338ca !important;
+}
+.alert-warning .btn-close {
+    filter: invert(1);
 }
