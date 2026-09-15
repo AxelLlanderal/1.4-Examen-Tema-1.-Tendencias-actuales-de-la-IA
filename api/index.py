@@ -5,8 +5,7 @@ from services.document_parser import DocumentParser
 from utils.validators import FileValidator
 
 app = Flask(__name__)
-# Reemplaza CORS(app) por:
-CORS(app, resources={r"/api/*": {"origins": "https://AxelLlanderal.github.io"}})  # Habilita peticiones cruzadas (CORS)
+CORS(app, resources={r"/api/*": {"origins": "https://axelllanderal.github.io"}})
 
 translator = OpenAITranslatorService()
 
