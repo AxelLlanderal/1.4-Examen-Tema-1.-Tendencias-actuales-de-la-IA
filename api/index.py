@@ -1,29 +1,39 @@
+import sys
+import os
+
+# Agrega la carpeta actual al path de Python para evitar errores de importación
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+
+# Importaciones absolutas directas
 from services.openai_service import OpenAITranslatorService
 from services.document_parser import DocumentParser
 from utils.validators import FileValidator
 
 app = Flask(__name__)
 
-# Configuración explícita de CORS para permitir la URL de GitHub Pages
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+# Configuración de CORS permitiendo tu dominio de GitHub Pages
+CORS(app, resources={r"/api/*": {"origins": "https://axelllanderal.github.io"}})
 
 translator = OpenAITranslatorService()
 
-# Manejador global para responder con HTTP 200 a las peticiones PREFLIGHT (OPTIONS)
 @app.before_request
 def handle_preflight():
     if request.method == "OPTIONS":
         response = app.make_default_options_response()
         headers = response.headers
-        headers['Access-Control-Allow-Origin'] = '*'
+        headers['Access-Control-Allow-Origin'] = 'https://axelllanderal.github.io'
         headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
         headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         return response, 200
 
 @app.route('/api/translate', methods=['POST', 'OPTIONS'])
 def translate_text():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
     data = request.get_json() or {}
     text = data.get('text', '')
     source_lang = data.get('source_lang', 'Español')
@@ -40,6 +50,9 @@ def translate_text():
 
 @app.route('/api/translate-document', methods=['POST', 'OPTIONS'])
 def translate_document():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
     if 'file' not in request.files:
         return jsonify({'message': 'No se seleccionó ningún archivo.'}), 400
 
@@ -60,6 +73,9 @@ def translate_document():
 
 @app.route('/api/translate-audio', methods=['POST', 'OPTIONS'])
 def translate_audio():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
     if 'file' not in request.files:
         return jsonify({'message': 'No se subió archivo de audio.'}), 400
 
@@ -83,6 +99,9 @@ def translate_audio():
 
 @app.route('/api/translate-image', methods=['POST', 'OPTIONS'])
 def translate_image():
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'ok'}), 200
+
     if 'file' not in request.files:
         return jsonify({'message': 'No se subió ninguna imagen.'}), 400
 
