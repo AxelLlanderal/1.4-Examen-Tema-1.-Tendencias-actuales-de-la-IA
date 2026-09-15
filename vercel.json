@@ -9,12 +9,7 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "api/index.py",
-      "headers": {
-        "Access-Control-Allow-Origin": "https://axelllanderal.github.io",
-        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type"
-      }
+      "dest": "api/index.py"
     }
   ]
 }

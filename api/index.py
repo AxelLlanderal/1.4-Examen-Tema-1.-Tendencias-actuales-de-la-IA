@@ -5,13 +5,24 @@ from services.document_parser import DocumentParser
 from utils.validators import FileValidator
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "https://axelllanderal.github.io"}})
+
+# Configuración explícita de CORS para permitir la URL de GitHub Pages
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 translator = OpenAITranslatorService()
 
-MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
+# Manejador global para responder con HTTP 200 a las peticiones PREFLIGHT (OPTIONS)
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        response = app.make_default_options_response()
+        headers = response.headers
+        headers['Access-Control-Allow-Origin'] = '*'
+        headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
+        headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+        return response, 200
 
-@app.route('/api/translate', methods=['POST'])
+@app.route('/api/translate', methods=['POST', 'OPTIONS'])
 def translate_text():
     data = request.get_json() or {}
     text = data.get('text', '')
@@ -27,7 +38,7 @@ def translate_text():
     except Exception as e:
         return jsonify({'message': str(e)}), 500
 
-@app.route('/api/translate-document', methods=['POST'])
+@app.route('/api/translate-document', methods=['POST', 'OPTIONS'])
 def translate_document():
     if 'file' not in request.files:
         return jsonify({'message': 'No se seleccionó ningún archivo.'}), 400
@@ -35,10 +46,10 @@ def translate_document():
     file = request.files['file']
     file_bytes = file.read()
 
-    if len(file_bytes) > MAX_FILE_SIZE:
-        return jsonify({'message': 'El archivo excede el tamaño máximo permitido (10MB).'}), 400
-
     try:
+        FileValidator.validate_size(file_bytes)
+        FileValidator.validate_extension(file.filename, FileValidator.ALLOWED_DOC_EXTENSIONS)
+        
         text = DocumentParser.parse_file(file_bytes, file.filename)
         translated = translator.translate_text(text, "Auto", "Inglés")
         return jsonify({'translated_text': translated})
@@ -47,7 +58,7 @@ def translate_document():
     except Exception as e:
         return jsonify({'message': 'Error procesando el documento.'}), 500
 
-@app.route('/api/translate-audio', methods=['POST'])
+@app.route('/api/translate-audio', methods=['POST', 'OPTIONS'])
 def translate_audio():
     if 'file' not in request.files:
         return jsonify({'message': 'No se subió archivo de audio.'}), 400
@@ -70,7 +81,7 @@ def translate_audio():
     except Exception as e:
         return jsonify({'message': 'Error procesando el audio.'}), 500
 
-@app.route('/api/translate-image', methods=['POST'])
+@app.route('/api/translate-image', methods=['POST', 'OPTIONS'])
 def translate_image():
     if 'file' not in request.files:
         return jsonify({'message': 'No se subió ninguna imagen.'}), 400
