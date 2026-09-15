@@ -1,13 +1,13 @@
 /* Variables para Tema Oscuro Profesional */
 :root {
     --bg-main: #0f172a;           /* Fondo principal oscuro */
-    --card-bg: #1e293b;           /* Contenedor ligeramente más claro */
-    --input-bg: #334155;          /* Fondo de inputs y cajas */
-    --text-primary: #f8fafc;      /* Texto principal blanco */
-    --text-muted: #94a3b8;        /* Texto secundario */
+    --card-bg: #1e293b;           /* Contenedor principal */
+    --input-bg: #334155;          /* Cajas de texto e inputs */
+    --text-primary: #ffffff;      /* Texto principal blanco puro */
+    --text-muted: #cbd5e1;        /* Texto secundario gris claro */
     --accent: #6366f1;            /* Morado neón/índigo */
     --accent-hover: #4f46e5;
-    --border-color: #334155;
+    --border-color: #475569;
     --radius-lg: 16px;
     --radius-md: 10px;
 }
@@ -15,8 +15,13 @@
 body {
     background-color: var(--bg-main) !important;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
     min-height: 100vh;
+}
+
+/* Forzar color visible en todas las etiquetas y textos */
+label, .form-label, p, h5, h6, span, div {
+    color: var(--text-primary) !important;
 }
 
 /* Navbar y Footer */
@@ -28,13 +33,16 @@ footer {
     border-top: 1px solid var(--border-color);
     border-bottom: none;
 }
+footer p {
+    color: var(--text-muted) !important;
+}
 
-/* Encapsulador principal */
+/* Tarjeta Principal */
 .card {
     background-color: var(--card-bg) !important;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-color) !important;
     border-radius: var(--radius-lg);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
 /* Pestañas de Navegación */
@@ -45,43 +53,42 @@ footer {
 }
 
 .nav-pills .nav-link {
-    color: var(--text-muted);
+    color: var(--text-muted) !important;
     font-weight: 600;
     border-radius: var(--radius-md);
     transition: all 0.2s ease;
 }
 
 .nav-pills .nav-link:hover {
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
     background-color: rgba(255, 255, 255, 0.05);
 }
 
 .nav-pills .nav-link.active {
-    background-color: var(--accent);
-    color: #ffffff;
+    background-color: var(--accent) !important;
+    color: #ffffff !important;
     box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
 }
 
-/* Caja del Historial del Chat */
+/* Historial del Chat */
 #chat-history {
-    background-color: var(--input-bg) !important;
-    border: 1px solid var(--border-color);
+    background-color: #0f172a !important;
+    border: 1px solid var(--border-color) !important;
     border-radius: var(--radius-md);
     padding: 16px;
     min-height: 380px;
     max-height: 450px;
     overflow-y: auto;
-    color: var(--text-primary);
 }
 
-/* Personalización de los Globos de Texto en el Chat */
-.border-primary, .border-success {
-    background-color: #1e293b !important;
-    color: var(--text-primary) !important;
+/* Globos de mensaje dentro del Chat */
+#chat-history .card, 
+#chat-history div[class*="border-"] {
+    background-color: var(--card-bg) !important;
     border-color: var(--border-color) !important;
 }
 
-/* Inputs y Selects */
+/* Inputs, Selects y Botón de archivo */
 .form-control, .form-select {
     background-color: var(--input-bg) !important;
     border: 1px solid var(--border-color) !important;
@@ -90,7 +97,7 @@ footer {
 }
 
 .form-control::placeholder {
-    color: var(--text-muted);
+    color: var(--text-muted) !important;
 }
 
 .form-control:focus, .form-select:focus {
@@ -102,6 +109,7 @@ footer {
 .btn-primary {
     background-color: var(--accent) !important;
     border-color: var(--accent) !important;
+    color: #ffffff !important;
     border-radius: var(--radius-md);
     font-weight: 600;
 }
@@ -110,19 +118,25 @@ footer {
     background-color: var(--accent-hover) !important;
 }
 
-/* Resultados de Documentos, Imagen y Audio */
-#doc-translated-content, #img-translated-text, #audio-original, #audio-translated {
-    background-color: var(--input-bg) !important;
+/* Áreas de resultados (Audio, Documentos, Imagen) */
+#doc-translated-content, 
+#img-translated-text, 
+#audio-original, 
+#audio-translated {
+    background-color: #0f172a !important;
     border: 1px solid var(--border-color) !important;
     color: var(--text-primary) !important;
     border-radius: var(--radius-md);
 }
 
-/* Banner de Alerta */
+/* Banner de Alerta de Privacidad */
 .alert-warning {
-    background-color: #312e81 !important;
+    background-color: #1e1b4b !important;
     color: #e0e7ff !important;
     border: 1px solid #4338ca !important;
+}
+.alert-warning strong, .alert-warning span {
+    color: #e0e7ff !important;
 }
 .alert-warning .btn-close {
     filter: invert(1);
