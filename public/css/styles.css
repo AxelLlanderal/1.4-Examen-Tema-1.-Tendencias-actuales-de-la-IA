@@ -1,0 +1,26 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#chat-history {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+}
+
+.card {
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.nav-pills .nav-link.active {
+    background-color: #0d6efd;
+}
+
+#doc-translated-content, #img-translated-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
