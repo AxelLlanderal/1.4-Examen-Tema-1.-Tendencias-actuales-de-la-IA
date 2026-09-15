@@ -1,20 +1,25 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import sys
 import os
 
-# Agrega la carpeta actual al path de Python para evitar errores de importación
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Agrega la carpeta 'api' y la raíz del proyecto al PATH de Python
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
 
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
-# Importaciones absolutas directas
+# Importaciones de tus módulos locales
 from services.openai_service import OpenAITranslatorService
 from services.document_parser import DocumentParser
 from utils.validators import FileValidator
 
 app = Flask(__name__)
 
-# Configuración de CORS permitiendo tu dominio de GitHub Pages
+# Configuración de CORS permitiendo GitHub Pages
 CORS(app, resources={r"/api/*": {"origins": "https://axelllanderal.github.io"}})
 
 translator = OpenAITranslatorService()
