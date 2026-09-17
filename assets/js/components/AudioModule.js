@@ -1,5 +1,6 @@
 class AudioModule {
-    constructor() {
+    constructor(apiService) {
+        this.apiService = apiService; // Recibe apiService desde app.js
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.recordedBlob = null;
@@ -23,13 +24,11 @@ class AudioModule {
     }
 
     initEvents() {
-        // Alternar entre Subir y Grabar
         if (this.btnModeUpload && this.btnModeRecord) {
             this.btnModeUpload.addEventListener('click', () => this.switchMode('upload'));
             this.btnModeRecord.addEventListener('click', () => this.switchMode('record'));
         }
 
-        // Eventos de Grabación
         if (this.btnRecordToggle) {
             this.btnRecordToggle.addEventListener('click', () => this.toggleRecording());
         }
@@ -56,12 +55,10 @@ class AudioModule {
 
     async toggleRecording() {
         if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
-            // Detener grabación
             this.mediaRecorder.stop();
             this.btnRecordToggle.classList.remove('pulse-animation');
             this.recordStatusText.innerText = "Grabación completada";
         } else {
-            // Iniciar grabación
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 this.mediaRecorder = new MediaRecorder(stream);
@@ -92,7 +89,6 @@ class AudioModule {
     async sendRecordedAudio() {
         if (!this.recordedBlob) return;
 
-        // Visualización de carga
         this.btnSendRecorded.disabled = true;
         this.btnSendRecorded.innerText = "Traduciendo...";
         this.audioStatus.className = "mt-3";
@@ -102,8 +98,8 @@ class AudioModule {
         formData.append('file', this.recordedBlob, 'grabacion.mp3');
 
         try {
-            // Llamada directa al método estático
-            const response = await ApiService.translateAudio(formData);
+            // Usa la instancia recibida en el constructor enviando la petición a Vercel
+            const response = await this.apiService.translateAudio(formData);
 
             document.getElementById('audio-original').innerText = response.original_text || response.text || '';
             document.getElementById('audio-translated').innerText = response.translated_text || response.translation || '';
