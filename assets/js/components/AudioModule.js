@@ -4,7 +4,7 @@ class AudioModule {
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.recordedBlob = null;
-        
+
         this.initElements();
         this.initEvents();
     }
@@ -14,7 +14,7 @@ class AudioModule {
         this.btnModeRecord = document.getElementById('btn-mode-record');
         this.uploadForm = document.getElementById('audio-form');
         this.recordContainer = document.getElementById('record-container');
-        
+
         this.btnRecordToggle = document.getElementById('btn-record-toggle');
         this.btnSendRecorded = document.getElementById('btn-send-recorded');
         this.recordStatusText = document.getElementById('record-status-text');
@@ -117,46 +117,36 @@ class AudioModule {
     }
 
     async processAudioRequest(formData) {
-        this.audioStatus.className = "mt-3";
-        this.audioStatus.innerText = "Procesando audio...";
+    this.audioStatus.className = "mt-3";
+    this.audioStatus.innerText = "Procesando audio...";
 
-        try {
-            const response = await this.apiService.translateAudio(formData);
+    try {
+        const response = await this.apiService.translateAudio(formData);
 
-            const originalText = response.original_text || response.text || '';
-            const translatedText = response.translated_text || response.translation || '';
+        const originalText = response.original_text || response.text || '';
+        const translatedText = response.translated_text || response.translation || '';
 
-            document.getElementById('audio-original').innerText = originalText;
-            document.getElementById('audio-translated').innerText = translatedText;
+        document.getElementById('audio-original').innerText = originalText;
+        document.getElementById('audio-translated').innerText = translatedText;
 
-            const audioPlayer = document.getElementById('audio-player');
+        const audioPlayer = document.getElementById('audio-player');
 
-            // Opción A: Si el backend envía la propiedad 'audio_url' o 'audio_base64'
-            if (response.audio_url) {
-                audioPlayer.src = response.audio_url;
-            } else if (response.audio_base64) {
-                audioPlayer.src = `data:audio/mp3;base64,${response.audio_base64}`;
-            } else {
-                // Opción B: Reproducción hablada automática vía Text-to-Speech nativo del navegador
-                this.speakText(translatedText);
-                audioPlayer.classList.add('d-none'); // Oculta reproductor vacío
-            }
-
-            this.audioResult.classList.remove('d-none');
-            this.audioStatus.innerText = "";
-        } catch (error) {
-            this.audioStatus.className = "alert alert-danger mt-3";
-            this.audioStatus.innerText = error.message;
+        if (translatedText) {
+            // Genera la URL de audio MP3 usando el servicio gratuito de TTS de Google
+            const encodedText = encodeURIComponent(translatedText);
+            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=en&client=tw-ob`;
+            
+            // Asigna el audio al reproductor para habilitar barra y descarga
+            audioPlayer.src = ttsUrl;
+            audioPlayer.classList.remove('d-none');
+            audioPlayer.play();
         }
-    }
 
-    // Método auxiliar para reproducir la voz traducida mediante el navegador
-    speakText(text) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel(); // Detener audios anteriores
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US'; // Idioma de salida
-            window.speechSynthesis.speak(utterance);
-        }
+        this.audioResult.classList.remove('d-none');
+        this.audioStatus.innerText = "";
+    } catch (error) {
+        this.audioStatus.className = "alert alert-danger mt-3";
+        this.audioStatus.innerText = error.message;
     }
+}
 }
