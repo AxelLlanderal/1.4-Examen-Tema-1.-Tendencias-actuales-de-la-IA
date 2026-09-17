@@ -28,7 +28,7 @@ class DocumentModule {
         const formData = new FormData();
         formData.append('file', file);
 
-        this.showStatus('Leyendo y traduciendo el documento... Esto puede tomar unos segundos.', 'info');
+        this.showStatus('Leyendo y traduciendo el documento... Esto puede tomar unos segundos.', 'dark');
         this.resultDiv.classList.add('d-none');
 
         try {

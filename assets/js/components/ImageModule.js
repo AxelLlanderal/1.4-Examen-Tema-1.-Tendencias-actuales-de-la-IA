@@ -36,7 +36,7 @@ class ImageModule {
         const formData = new FormData();
         formData.append('file', file);
 
-        this.showStatus('Analizando imagen con visión por computadora... Por favor espera.', 'info');
+        this.showStatus('Analizando imagen con visión por computadora... Por favor espera.', 'dark');
         this.resultDiv.classList.add('d-none');
 
         try {
