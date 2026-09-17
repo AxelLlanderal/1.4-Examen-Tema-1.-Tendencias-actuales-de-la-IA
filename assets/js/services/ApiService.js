@@ -6,7 +6,7 @@ class ApiService {
     async postRequest(endpoint, payload, isFormData = false) {
         try {
             const options = { method: 'POST' };
-            
+
             if (isFormData) {
                 options.body = payload;
             } else {
@@ -27,8 +27,8 @@ class ApiService {
         }
     }
 
-    // Método de instancia para traducir audio
+    // Endpoint para audio subido o grabado
     async translateAudio(formData) {
-        return await this.postRequest('/translate-audio', formData, true);
+        return await this.postRequest('/api/translate-audio', formData, true);
     }
 }

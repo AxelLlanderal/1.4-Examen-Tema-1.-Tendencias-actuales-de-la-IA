@@ -1,6 +1,6 @@
 class AudioModule {
     constructor(apiService) {
-        this.apiService = apiService; // Recibe apiService desde app.js
+        this.apiService = apiService;
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.recordedBlob = null;
@@ -24,11 +24,18 @@ class AudioModule {
     }
 
     initEvents() {
+        // Selector de modo Subir / Grabar
         if (this.btnModeUpload && this.btnModeRecord) {
             this.btnModeUpload.addEventListener('click', () => this.switchMode('upload'));
             this.btnModeRecord.addEventListener('click', () => this.switchMode('record'));
         }
 
+        // Formulario original de subida
+        if (this.uploadForm) {
+            this.uploadForm.addEventListener('submit', (e) => this.handleUploadSubmit(e));
+        }
+
+        // Eventos de Grabación
         if (this.btnRecordToggle) {
             this.btnRecordToggle.addEventListener('click', () => this.toggleRecording());
         }
@@ -50,9 +57,25 @@ class AudioModule {
             this.recordContainer.classList.remove('d-none');
         }
         this.audioStatus.className = 'mt-3';
-        this.audioStatus.innerHTML = '';
+        this.audioStatus.innerText = '';
     }
 
+    // Manejo del formulario de subida de archivo original
+    async handleUploadSubmit(e) {
+        e.preventDefault();
+        const fileInput = document.getElementById('audio-file');
+        if (!fileInput || !fileInput.files[0]) {
+            this.audioStatus.className = "alert alert-danger mt-3";
+            this.audioStatus.innerText = "Por favor selecciona un archivo de audio.";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        await this.processAudioRequest(formData);
+    }
+
+    // Manejo de grabación
     async toggleRecording() {
         if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
             this.mediaRecorder.stop();
@@ -88,28 +111,26 @@ class AudioModule {
 
     async sendRecordedAudio() {
         if (!this.recordedBlob) return;
-
-        this.btnSendRecorded.disabled = true;
-        this.btnSendRecorded.innerText = "Traduciendo...";
-        this.audioStatus.className = "mt-3";
-        this.audioStatus.innerText = "";
-
         const formData = new FormData();
         formData.append('file', this.recordedBlob, 'grabacion.mp3');
+        await this.processAudioRequest(formData);
+    }
+
+    // Petición común al backend en Vercel
+    async processAudioRequest(formData) {
+        this.audioStatus.className = "mt-3";
+        this.audioStatus.innerText = "Procesando audio...";
 
         try {
-            // Usa la instancia recibida en el constructor enviando la petición a Vercel
             const response = await this.apiService.translateAudio(formData);
 
             document.getElementById('audio-original').innerText = response.original_text || response.text || '';
             document.getElementById('audio-translated').innerText = response.translated_text || response.translation || '';
             this.audioResult.classList.remove('d-none');
+            this.audioStatus.innerText = "";
         } catch (error) {
             this.audioStatus.className = "alert alert-danger mt-3";
             this.audioStatus.innerText = error.message;
-        } finally {
-            this.btnSendRecorded.disabled = false;
-            this.btnSendRecorded.innerText = "Traducir Grabación";
         }
     }
 }
