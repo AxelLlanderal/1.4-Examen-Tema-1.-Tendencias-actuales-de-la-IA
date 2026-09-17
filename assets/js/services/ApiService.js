@@ -6,9 +6,8 @@ class ApiService {
     async postRequest(endpoint, payload, isFormData = false) {
         try {
             const options = { method: 'POST' };
-
             if (isFormData) {
-                options.body = payload;
+                options.body = payload; // FormData maneja sus propios Headers
             } else {
                 options.headers = { 'Content-Type': 'application/json' };
                 options.body = JSON.stringify(payload);
@@ -25,10 +24,5 @@ class ApiService {
             console.error('Error ApiService:', error);
             throw new Error(error.message || 'Error de conexión con el backend');
         }
-    }
-
-    // Endpoint para audio subido o grabado
-    async translateAudio(formData) {
-        return await this.postRequest('/api/translate-audio', formData, true);
     }
 }

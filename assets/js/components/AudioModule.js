@@ -1,38 +1,45 @@
 class AudioModule {
     constructor(apiService) {
         this.apiService = apiService;
-        this.mediaRecorder = null;
-        this.audioChunks = [];
-        this.recordedBlob = null;
+        
+        // Elementos originales
+        this.form = document.getElementById('audio-form');
+        this.fileInput = document.getElementById('audio-file');
+        this.statusDiv = document.getElementById('audio-status');
+        this.resultDiv = document.getElementById('audio-result');
+        this.originalP = document.getElementById('audio-original');
+        this.translatedP = document.getElementById('audio-translated');
+        this.audioPlayer = document.getElementById('audio-player');
 
-        this.initElements();
-        this.initEvents();
-    }
-
-    initElements() {
+        // Elementos de cambio de modo y grabación
         this.btnModeUpload = document.getElementById('btn-mode-upload');
         this.btnModeRecord = document.getElementById('btn-mode-record');
-        this.uploadForm = document.getElementById('audio-form');
         this.recordContainer = document.getElementById('record-container');
-
         this.btnRecordToggle = document.getElementById('btn-record-toggle');
         this.btnSendRecorded = document.getElementById('btn-send-recorded');
         this.recordStatusText = document.getElementById('record-status-text');
         this.recordPreview = document.getElementById('record-preview');
-        this.audioStatus = document.getElementById('audio-status');
-        this.audioResult = document.getElementById('audio-result');
+
+        this.mediaRecorder = null;
+        this.audioChunks = [];
+        this.recordedBlob = null;
+
+        this.initEvents();
     }
 
     initEvents() {
-        // Selector de modo Subir / Grabar
+        // Evento formulario de subida original
+        if (this.form) {
+            this.form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleAudioUpload();
+            });
+        }
+
+        // Cambio entre modos Subir / Grabar
         if (this.btnModeUpload && this.btnModeRecord) {
             this.btnModeUpload.addEventListener('click', () => this.switchMode('upload'));
             this.btnModeRecord.addEventListener('click', () => this.switchMode('record'));
-        }
-
-        // Formulario original de subida
-        if (this.uploadForm) {
-            this.uploadForm.addEventListener('submit', (e) => this.handleUploadSubmit(e));
         }
 
         // Eventos de Grabación
@@ -40,7 +47,7 @@ class AudioModule {
             this.btnRecordToggle.addEventListener('click', () => this.toggleRecording());
         }
         if (this.btnSendRecorded) {
-            this.btnSendRecorded.addEventListener('click', () => this.sendRecordedAudio());
+            this.btnSendRecorded.addEventListener('click', () => this.handleRecordedUpload());
         }
     }
 
@@ -48,34 +55,34 @@ class AudioModule {
         if (mode === 'upload') {
             this.btnModeUpload.classList.add('active');
             this.btnModeRecord.classList.remove('active');
-            this.uploadForm.classList.remove('d-none');
+            this.form.classList.remove('d-none');
             this.recordContainer.classList.add('d-none');
         } else {
             this.btnModeRecord.classList.add('active');
             this.btnModeUpload.classList.remove('active');
-            this.uploadForm.classList.add('d-none');
+            this.form.classList.add('d-none');
             this.recordContainer.classList.remove('d-none');
         }
-        this.audioStatus.className = 'mt-3';
-        this.audioStatus.innerText = '';
+        this.statusDiv.className = 'mt-3';
+        this.statusDiv.textContent = '';
     }
 
-    // Manejo del formulario de subida de archivo original
-    async handleUploadSubmit(e) {
-        e.preventDefault();
-        const fileInput = document.getElementById('audio-file');
-        if (!fileInput || !fileInput.files[0]) {
-            this.audioStatus.className = "alert alert-danger mt-3";
-            this.audioStatus.innerText = "Por favor selecciona un archivo de audio.";
+    // 1. Procesar subida de archivo existente
+    async handleAudioUpload() {
+        const file = this.fileInput.files[0];
+        if (!file) {
+            this.showStatus('Por favor, selecciona un archivo de audio.', 'danger');
             return;
         }
 
         const formData = new FormData();
-        formData.append('file', fileInput.files[0]);
-        await this.processAudioRequest(formData);
+        formData.append('file', file);
+        formData.append('target_lang', 'Inglés');
+
+        await this.sendToBackend(formData);
     }
 
-    // Manejo de grabación
+    // 2. Control del Micrófono (Grabar/Detener)
     async toggleRecording() {
         if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
             this.mediaRecorder.stop();
@@ -103,53 +110,51 @@ class AudioModule {
                 this.btnRecordToggle.classList.add('pulse-animation');
                 this.recordStatusText.innerText = "Grabando... Haz clic de nuevo para detener";
             } catch (err) {
-                this.audioStatus.className = "alert alert-danger mt-3";
-                this.audioStatus.innerText = "No se pudo acceder al micrófono. Verifica los permisos de tu navegador.";
+                this.showStatus('No se pudo acceder al micrófono. Verifica los permisos de tu navegador.', 'danger');
             }
         }
     }
 
-    async sendRecordedAudio() {
+    // 3. Procesar audio grabado
+    async handleRecordedUpload() {
         if (!this.recordedBlob) return;
+
         const formData = new FormData();
         formData.append('file', this.recordedBlob, 'grabacion.mp3');
-        await this.processAudioRequest(formData);
+        formData.append('target_lang', 'Inglés');
+
+        await this.sendToBackend(formData);
     }
 
-    async processAudioRequest(formData) {
-        this.audioStatus.className = "mt-3";
-        this.audioStatus.innerText = "Procesando audio...";
+    // Petición unificada al backend que carga tu audio base64 original
+    async sendToBackend(formData) {
+        this.showStatus('Procesando y traduciendo audio... Por favor espera.', 'info');
+        this.resultDiv.classList.add('d-none');
 
         try {
-            const response = await this.apiService.translateAudio(formData);
-
-            const originalText = response.original_text || response.text || '';
-            const translatedText = response.translated_text || response.translation || '';
-
-            document.getElementById('audio-original').innerText = originalText;
-            document.getElementById('audio-translated').innerText = translatedText;
-
-            const audioPlayer = document.getElementById('audio-player');
-
-            if (translatedText) {
-                // API pública de TTS con CORS habilitado (Voice Brian / English)
-                const encodedText = encodeURIComponent(translatedText);
-                const ttsUrl = `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodedText}`;
-
-                // Asigna la fuente al reproductor de HTML
-                audioPlayer.src = ttsUrl;
-                audioPlayer.classList.remove('d-none');
-
-                // Carga y reproduce el audio
-                audioPlayer.load();
-                audioPlayer.play().catch(e => console.log('Autoplay prevenido por el navegador:', e));
+            const result = await this.apiService.postRequest('/api/translate-audio', formData, true);
+            
+            this.originalP.textContent = result.original_text || result.text || '';
+            this.translatedP.textContent = result.translated_text || result.translation || '';
+            
+            // Asigna la cadena base64 agregando el Data URI schema si no lo trae
+            if (result.audio_base64) {
+                const base64Audio = result.audio_base64.startsWith('data:') 
+                    ? result.audio_base64 
+                    : `data:audio/mp3;base64,${result.audio_base64}`;
+                
+                this.audioPlayer.src = base64Audio;
             }
 
-            this.audioResult.classList.remove('d-none');
-            this.audioStatus.innerText = "";
+            this.resultDiv.classList.remove('d-none');
+            this.showStatus('Audio traducido con éxito.', 'success');
         } catch (error) {
-            this.audioStatus.className = "alert alert-danger mt-3";
-            this.audioStatus.innerText = error.message;
+            this.showStatus(error.message || 'Error al procesar el audio.', 'danger');
         }
+    }
+
+    showStatus(message, type) {
+        this.statusDiv.className = `alert alert-${type} mt-3`;
+        this.statusDiv.textContent = message;
     }
 }
