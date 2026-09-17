@@ -116,7 +116,6 @@ class AudioModule {
         await this.processAudioRequest(formData);
     }
 
-    // Petición común al backend en Vercel
     async processAudioRequest(formData) {
         this.audioStatus.className = "mt-3";
         this.audioStatus.innerText = "Procesando audio...";
@@ -124,13 +123,40 @@ class AudioModule {
         try {
             const response = await this.apiService.translateAudio(formData);
 
-            document.getElementById('audio-original').innerText = response.original_text || response.text || '';
-            document.getElementById('audio-translated').innerText = response.translated_text || response.translation || '';
+            const originalText = response.original_text || response.text || '';
+            const translatedText = response.translated_text || response.translation || '';
+
+            document.getElementById('audio-original').innerText = originalText;
+            document.getElementById('audio-translated').innerText = translatedText;
+
+            const audioPlayer = document.getElementById('audio-player');
+
+            // Opción A: Si el backend envía la propiedad 'audio_url' o 'audio_base64'
+            if (response.audio_url) {
+                audioPlayer.src = response.audio_url;
+            } else if (response.audio_base64) {
+                audioPlayer.src = `data:audio/mp3;base64,${response.audio_base64}`;
+            } else {
+                // Opción B: Reproducción hablada automática vía Text-to-Speech nativo del navegador
+                this.speakText(translatedText);
+                audioPlayer.classList.add('d-none'); // Oculta reproductor vacío
+            }
+
             this.audioResult.classList.remove('d-none');
             this.audioStatus.innerText = "";
         } catch (error) {
             this.audioStatus.className = "alert alert-danger mt-3";
             this.audioStatus.innerText = error.message;
+        }
+    }
+
+    // Método auxiliar para reproducir la voz traducida mediante el navegador
+    speakText(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel(); // Detener audios anteriores
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US'; // Idioma de salida
+            window.speechSynthesis.speak(utterance);
         }
     }
 }
