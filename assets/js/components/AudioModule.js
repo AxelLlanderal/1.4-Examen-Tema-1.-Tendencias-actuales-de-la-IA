@@ -128,7 +128,7 @@ class AudioModule {
 
     // Petición unificada al backend que carga tu audio base64 original
     async sendToBackend(formData) {
-        this.showStatus('Procesando y traduciendo audio... Por favor espera.', 'info');
+        this.showStatus('Procesando y traduciendo audio... Por favor espera.', 'dark');
         this.resultDiv.classList.add('d-none');
 
         try {
