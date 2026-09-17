@@ -117,36 +117,39 @@ class AudioModule {
     }
 
     async processAudioRequest(formData) {
-    this.audioStatus.className = "mt-3";
-    this.audioStatus.innerText = "Procesando audio...";
+        this.audioStatus.className = "mt-3";
+        this.audioStatus.innerText = "Procesando audio...";
 
-    try {
-        const response = await this.apiService.translateAudio(formData);
+        try {
+            const response = await this.apiService.translateAudio(formData);
 
-        const originalText = response.original_text || response.text || '';
-        const translatedText = response.translated_text || response.translation || '';
+            const originalText = response.original_text || response.text || '';
+            const translatedText = response.translated_text || response.translation || '';
 
-        document.getElementById('audio-original').innerText = originalText;
-        document.getElementById('audio-translated').innerText = translatedText;
+            document.getElementById('audio-original').innerText = originalText;
+            document.getElementById('audio-translated').innerText = translatedText;
 
-        const audioPlayer = document.getElementById('audio-player');
+            const audioPlayer = document.getElementById('audio-player');
 
-        if (translatedText) {
-            // Genera la URL de audio MP3 usando el servicio gratuito de TTS de Google
-            const encodedText = encodeURIComponent(translatedText);
-            const ttsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=en&client=tw-ob`;
-            
-            // Asigna el audio al reproductor para habilitar barra y descarga
-            audioPlayer.src = ttsUrl;
-            audioPlayer.classList.remove('d-none');
-            audioPlayer.play();
+            if (translatedText) {
+                // API pública de TTS con CORS habilitado (Voice Brian / English)
+                const encodedText = encodeURIComponent(translatedText);
+                const ttsUrl = `https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=${encodedText}`;
+
+                // Asigna la fuente al reproductor de HTML
+                audioPlayer.src = ttsUrl;
+                audioPlayer.classList.remove('d-none');
+
+                // Carga y reproduce el audio
+                audioPlayer.load();
+                audioPlayer.play().catch(e => console.log('Autoplay prevenido por el navegador:', e));
+            }
+
+            this.audioResult.classList.remove('d-none');
+            this.audioStatus.innerText = "";
+        } catch (error) {
+            this.audioStatus.className = "alert alert-danger mt-3";
+            this.audioStatus.innerText = error.message;
         }
-
-        this.audioResult.classList.remove('d-none');
-        this.audioStatus.innerText = "";
-    } catch (error) {
-        this.audioStatus.className = "alert alert-danger mt-3";
-        this.audioStatus.innerText = error.message;
     }
-}
 }
