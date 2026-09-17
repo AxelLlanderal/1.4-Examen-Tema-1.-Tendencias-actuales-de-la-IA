@@ -3,6 +3,7 @@ class AudioModule {
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.recordedBlob = null;
+        
         this.initElements();
         this.initEvents();
     }
@@ -18,16 +19,23 @@ class AudioModule {
         this.recordStatusText = document.getElementById('record-status-text');
         this.recordPreview = document.getElementById('record-preview');
         this.audioStatus = document.getElementById('audio-status');
+        this.audioResult = document.getElementById('audio-result');
     }
 
     initEvents() {
         // Alternar entre Subir y Grabar
-        this.btnModeUpload.addEventListener('click', () => this.switchMode('upload'));
-        this.btnModeRecord.addEventListener('click', () => this.switchMode('record'));
+        if (this.btnModeUpload && this.btnModeRecord) {
+            this.btnModeUpload.addEventListener('click', () => this.switchMode('upload'));
+            this.btnModeRecord.addEventListener('click', () => this.switchMode('record'));
+        }
 
-        // Control de Grabación
-        this.btnRecordToggle.addEventListener('click', () => this.toggleRecording());
-        this.btnSendRecorded.addEventListener('click', () => this.sendRecordedAudio());
+        // Eventos de Grabación
+        if (this.btnRecordToggle) {
+            this.btnRecordToggle.addEventListener('click', () => this.toggleRecording());
+        }
+        if (this.btnSendRecorded) {
+            this.btnSendRecorded.addEventListener('click', () => this.sendRecordedAudio());
+        }
     }
 
     switchMode(mode) {
@@ -73,7 +81,7 @@ class AudioModule {
 
                 this.mediaRecorder.start();
                 this.btnRecordToggle.classList.add('pulse-animation');
-                this.recordStatusText.innerText = "Grabando... Habla ahora";
+                this.recordStatusText.innerText = "Grabando... Haz clic de nuevo para detener";
             } catch (err) {
                 this.audioStatus.className = "alert alert-danger mt-3";
                 this.audioStatus.innerText = "No se pudo acceder al micrófono. Verifica los permisos de tu navegador.";
@@ -84,10 +92,28 @@ class AudioModule {
     async sendRecordedAudio() {
         if (!this.recordedBlob) return;
 
+        // Visualización de carga
+        this.btnSendRecorded.disabled = true;
+        this.btnSendRecorded.innerText = "Traduciendo...";
+        this.audioStatus.className = "mt-3";
+        this.audioStatus.innerText = "";
+
         const formData = new FormData();
         formData.append('file', this.recordedBlob, 'grabacion.mp3');
 
-        // Llama a tu ApiService actual pasando el formData
-        ApiService.translateAudio(formData);
+        try {
+            // Llamada directa al método estático
+            const response = await ApiService.translateAudio(formData);
+
+            document.getElementById('audio-original').innerText = response.original_text || response.text || '';
+            document.getElementById('audio-translated').innerText = response.translated_text || response.translation || '';
+            this.audioResult.classList.remove('d-none');
+        } catch (error) {
+            this.audioStatus.className = "alert alert-danger mt-3";
+            this.audioStatus.innerText = error.message;
+        } finally {
+            this.btnSendRecorded.disabled = false;
+            this.btnSendRecorded.innerText = "Traducir Grabación";
+        }
     }
 }

@@ -1,11 +1,11 @@
 class ApiService {
-    constructor(baseUrl) {
-        this.baseUrl = baseUrl;
-    }
+    // URL base de tu backend Flask
+    static BASE_URL = 'http://127.0.0.1:5000'; // Cambia esta URL por la de tu backend (ej. Render/Vercel)
 
-    async postRequest(endpoint, payload, isFormData = false) {
+    static async postRequest(endpoint, payload, isFormData = false) {
         try {
             const options = { method: 'POST' };
+            
             if (isFormData) {
                 options.body = payload; // FormData maneja sus propios Headers
             } else {
@@ -13,7 +13,7 @@ class ApiService {
                 options.body = JSON.stringify(payload);
             }
 
-            const response = await fetch(`${this.baseUrl}${endpoint}`, options);
+            const response = await fetch(`${this.BASE_URL}${endpoint}`, options);
             const data = await response.json();
 
             if (!response.ok) {
@@ -24,10 +24,10 @@ class ApiService {
             console.error('Error ApiService:', error);
             throw new Error(error.message || 'Error de conexión con el backend');
         }
-        
     }
-    // NÚEVO MÉTODO: Envia el FormData del audio al endpoint correspondiente
-    async translateAudio(formData) {
+
+    // Método estático para traducir audio grabado o subido
+    static async translateAudio(formData) {
         return await this.postRequest('/translate-audio', formData, true);
     }
 }
