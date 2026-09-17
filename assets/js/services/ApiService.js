@@ -24,5 +24,10 @@ class ApiService {
             console.error('Error ApiService:', error);
             throw new Error(error.message || 'Error de conexión con el backend');
         }
+        
+    }
+    // NÚEVO MÉTODO: Envia el FormData del audio al endpoint correspondiente
+    async translateAudio(formData) {
+        return await this.postRequest('/translate-audio', formData, true);
     }
 }
