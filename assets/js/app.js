@@ -14,10 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const input = document.getElementById('chat-input');
-            const direction = document.getElementById('chat-direction').value;
+            const directionSelect = document.getElementById('chat-direction');
             const text = input.value;
 
-            const [sourceLang, targetLang] = direction === 'es-en' 
+            // Lee la dirección seleccionada al momento de dar clic en Enviar
+            const [sourceLang, targetLang] = directionSelect.value === 'es-en' 
                 ? ['Español', 'Inglés'] 
                 : ['Inglés', 'Español'];
 
