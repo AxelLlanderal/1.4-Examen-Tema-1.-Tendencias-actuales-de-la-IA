@@ -11,9 +11,13 @@ class OpenAITranslatorService:
         if not text.strip():
             raise ValueError("El texto de entrada no puede estar vacío.")
 
+        # Prompt estricto que prohíbe responder como asistente conversacional
         system_prompt = (
-            f"Eres un traductor profesional experto. Traduce el siguiente texto de {source_lang} "
-            f"a {target_lang}. Mantén un tono natural, conserva términos técnicos, fechas y nombres propios."
+            "Eres un traductor estricto. Tu ÚNICA función es traducir el texto recibido. "
+            "Si el texto está en inglés, tradúcelo al español. "
+            "Si el texto está en español o cualquier otro idioma, tradúcelo al inglés. "
+            "REGLA CRÍTICA: NUNCA contestes, respondas la pregunta ni entables conversación. "
+            "DEVUELVE ÚNICAMENTE LA TRADUCCIÓN DIRECTA."
         )
 
         response = self.client.chat.completions.create(
@@ -22,9 +26,9 @@ class OpenAITranslatorService:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": text}
             ],
-            temperature=0.3
+            temperature=0.1
         )
-        return response.choices[0].message.content
+        return response.choices[0].message.content.strip()
 
     def process_audio(self, audio_file_bytes, filename: str, target_lang: str) -> dict:
         # 1. Transcribir audio con Whisper
@@ -37,9 +41,8 @@ class OpenAITranslatorService:
         if not original_text.strip():
             return {"error": "No se detectó voz utilizable en el audio."}
 
-        # 2. Traducir texto
-        source_lang = "Español" if target_lang == "Inglés" else "Inglés"
-        translated_text = self.translate_text(original_text, source_lang, target_lang)
+        # 2. Traducir texto detectando el idioma automáticamente
+        translated_text = self.translate_text(original_text, "Auto", target_lang)
 
         # 3. Generar Audio Traducido (TTS)
         speech_response = self.client.audio.speech.create(
