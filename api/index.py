@@ -20,7 +20,7 @@ from utils.validators import FileValidator
 app = Flask(__name__)
 
 # Configuración de CORS permitiendo GitHub Pages
-CORS(app, resources={r"/api/*": {"origins": "https://axelllanderal.github.io"}})
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 translator = OpenAITranslatorService()
 
