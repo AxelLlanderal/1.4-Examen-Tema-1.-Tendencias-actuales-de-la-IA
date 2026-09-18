@@ -18,10 +18,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!text) return;
 
-            // Detecta si el texto ingresado tiene palabras o caracteres comunes en español
-            const containsSpanish = /[áéíóúñ¿¡]/i.test(text) || /\b(hola|que|como|estas|bien|gracias|soy)\b/i.test(text);
+            // Detecta si el texto ingresado contiene palabras o caracteres comunes en español
+            const containsSpanish = /[áéíóúñ¿¡]/i.test(text) || /\b(hola|que|como|estas|bien|gracias|soy|dia|hoy)\b/i.test(text);
             
-            // Asigna dinámicamente el idioma de origen y destino
+            // Asigna el idioma de origen y destino dinámicamente
             const sourceLang = containsSpanish ? 'Español' : 'Inglés';
             const targetLang = containsSpanish ? 'Inglés' : 'Español';
 
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Envía la solicitud de traducción
                 await chatModule.sendMessage(text, 'Auto', targetLang);
                 
-                // Actualiza la tarjeta con el idioma real detectado (Azul para ES, Verde para EN)
+                // Actualiza el badge en la interfaz (Azul para Español, Verde para Inglés)
                 if (chatModule.chatHistory.length > 0) {
                     chatModule.chatHistory[chatModule.chatHistory.length - 1].lang = sourceLang;
                     chatModule.render();

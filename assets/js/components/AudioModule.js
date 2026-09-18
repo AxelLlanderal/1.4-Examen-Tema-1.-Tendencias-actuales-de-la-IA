@@ -2,7 +2,7 @@ class AudioModule {
     constructor(apiService) {
         this.apiService = apiService;
         
-        // Elementos originales
+        // Elementos de la interfaz
         this.form = document.getElementById('audio-form');
         this.fileInput = document.getElementById('audio-file');
         this.statusDiv = document.getElementById('audio-status');
@@ -11,7 +11,7 @@ class AudioModule {
         this.translatedP = document.getElementById('audio-translated');
         this.audioPlayer = document.getElementById('audio-player');
 
-        // Elementos de cambio de modo y grabación
+        // Elementos de cambio de modo y grabación por micrófono
         this.btnModeUpload = document.getElementById('btn-mode-upload');
         this.btnModeRecord = document.getElementById('btn-mode-record');
         this.recordContainer = document.getElementById('record-container');
@@ -28,7 +28,7 @@ class AudioModule {
     }
 
     initEvents() {
-        // Evento formulario de subida original
+        // Evento formulario de subida
         if (this.form) {
             this.form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -36,7 +36,7 @@ class AudioModule {
             });
         }
 
-        // Cambio entre modos Subir / Grabar
+        // Eventos para cambiar entre Subir / Grabar
         if (this.btnModeUpload && this.btnModeRecord) {
             this.btnModeUpload.addEventListener('click', () => this.switchMode('upload'));
             this.btnModeRecord.addEventListener('click', () => this.switchMode('record'));
@@ -67,7 +67,7 @@ class AudioModule {
         this.statusDiv.textContent = '';
     }
 
-    // 1. Procesar subida de archivo existente
+    // 1. Procesar subida de archivo
     async handleAudioUpload() {
         const file = this.fileInput.files[0];
         if (!file) {
@@ -77,12 +77,12 @@ class AudioModule {
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('target_lang', 'Inglés');
+        formData.append('target_lang', 'Inglés'); // Obliga la traducción directa
 
         await this.sendToBackend(formData);
     }
 
-    // 2. Control del Micrófono (Grabar/Detener)
+    // 2. Control del Micrófono (Grabar / Detener)
     async toggleRecording() {
         if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
             this.mediaRecorder.stop();
@@ -115,20 +115,20 @@ class AudioModule {
         }
     }
 
-    // 3. Procesar audio grabado
+    // 3. Procesar audio grabado desde el micrófono
     async handleRecordedUpload() {
         if (!this.recordedBlob) return;
 
         const formData = new FormData();
         formData.append('file', this.recordedBlob, 'grabacion.mp3');
-        formData.append('target_lang', 'Inglés');
+        formData.append('target_lang', 'Inglés'); // Obliga la traducción directa
 
         await this.sendToBackend(formData);
     }
 
-    // Petición unificada al backend que carga tu audio base64 original
+    // Petición al backend que proyecta textos y reproduce audio base64
     async sendToBackend(formData) {
-        this.showStatus('Procesando y traduciendo audio... Por favor espera.', 'dark');
+        this.showStatus('Procesando y traduciendo audio... Por favor espera.', 'info');
         this.resultDiv.classList.add('d-none');
 
         try {
@@ -137,7 +137,6 @@ class AudioModule {
             this.originalP.textContent = result.original_text || result.text || '';
             this.translatedP.textContent = result.translated_text || result.translation || '';
             
-            // Asigna la cadena base64 agregando el Data URI schema si no lo trae
             if (result.audio_base64) {
                 const base64Audio = result.audio_base64.startsWith('data:') 
                     ? result.audio_base64 
