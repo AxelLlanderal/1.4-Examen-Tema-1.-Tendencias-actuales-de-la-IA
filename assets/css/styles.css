@@ -195,3 +195,27 @@ footer p {
         box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
     }
 }
+/* Corrección para el aviso superior (Aviso de privacidad/proyecto) */
+.alert, 
+.alert-warning, 
+.alert-info {
+    background-color: #1e293b !important; /* Fondo oscuro acorde al tema */
+    color: #f8fafc !important;            /* Texto blanco/claro legible */
+    border: 1px solid #3b82f6 !important; /* Borde azul de acento */
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Corrección para las alertas de "Procesando/Cargando..." en Audio, Documentos e Imágenes */
+.loading-status, 
+.status-message, 
+.alert-status,
+[class*="loading"],
+[id*="status"] {
+    background-color: #0f172a !important; /* Fondo muy oscuro */
+    color: #38bdf8 !important;            /* Texto azul brillante legible */
+    border: 1px solid #1e293b !important;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-weight: 500;
+}
