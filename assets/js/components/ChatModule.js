@@ -5,23 +5,41 @@ class ChatModule {
         this.container = document.getElementById('chat-history');
     }
 
+    // assets/js/components/ChatModule.js
+
     async sendMessage(text, sourceLang, targetLang) {
-        if (!text.trim()) {
-            throw new Error("El mensaje no puede estar vacío.");
+        if (!text || !text.trim()) return;
+
+        try {
+            // Agrega el mensaje original del usuario
+            const userMsg = {
+                id: Date.now(),
+                sender: 'User',
+                text,
+                lang: sourceLang || 'Auto',
+                translated: null
+            };
+            this.chatHistory.push(userMsg);
+            this.render();
+
+            // Petición a la API
+            const result = await this.apiService.postRequest('/api/translate', {
+                text: text,
+                source_lang: sourceLang,
+                target_lang: targetLang
+            });
+
+            if (result && result.translated_text) {
+                userMsg.translated = result.translated_text;
+                if (result.source_lang) {
+                    userMsg.lang = result.source_lang;
+                }
+            }
+        } catch (error) {
+            console.error("Error al procesar la traducción:", error);
+        } finally {
+            this.render();
         }
-
-        const userMsg = { id: Date.now(), sender: 'User', text, lang: sourceLang, translated: null };
-        this.chatHistory.push(userMsg);
-        this.render();
-
-        const result = await this.apiService.postRequest('/api/translate', {
-            text,
-            source_lang: sourceLang,
-            target_lang: targetLang
-        });
-
-        userMsg.translated = result.translated_text;
-        this.render();
     }
 
     render() {
