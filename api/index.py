@@ -20,7 +20,7 @@ from utils.validators import FileValidator
 app = Flask(__name__)
 
 # Dominio exacto desde el que haces las peticiones (sin / al final)
-ALLOWED_ORIGIN = "https://llanderalarteaga.github.io"
+ALLOWED_ORIGIN = "https://llanderalarteaga.github.io" 
 
 # Configuración de CORS
 CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGIN}})
