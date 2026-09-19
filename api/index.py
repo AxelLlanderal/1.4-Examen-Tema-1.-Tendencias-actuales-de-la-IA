@@ -12,15 +12,18 @@ if current_dir not in sys.path:
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-# Importaciones de tus módulos locales
+# Importaciones locales
 from services.openai_service import OpenAITranslatorService
 from services.document_parser import DocumentParser
 from utils.validators import FileValidator
 
 app = Flask(__name__)
 
-# Configuración de CORS permitiendo GitHub Pages
-CORS(app, resources={r"/api/*": {"origins": "https://llanderalarteaga.github.io/"}})
+# Dominio exacto desde el que haces las peticiones (sin / al final)
+ALLOWED_ORIGIN = "https://llanderalarteaga.github.io"
+
+# Configuración de CORS
+CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGIN}})
 
 translator = OpenAITranslatorService()
 
@@ -29,7 +32,7 @@ def handle_preflight():
     if request.method == "OPTIONS":
         response = app.make_default_options_response()
         headers = response.headers
-        headers['Access-Control-Allow-Origin'] = 'https://axelllanderal.github.io'
+        headers['Access-Control-Allow-Origin'] = ALLOWED_ORIGIN
         headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
         headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
         return response, 200
