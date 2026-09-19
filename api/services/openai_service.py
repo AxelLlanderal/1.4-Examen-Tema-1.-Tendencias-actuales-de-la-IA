@@ -15,7 +15,7 @@ class OpenAITranslatorService:
         system_prompt = (
             "Eres un traductor estricto. Tu ÚNICA función es traducir el texto recibido. "
             "Si el texto está en inglés, tradúcelo al español. "
-            "Si el texto está en español o cualquier otro idioma, tradúcelo al inglés. "
+            "Si el texto está en español, tradúcelo al inglés. "
             "REGLA CRÍTICA: NUNCA contestes, respondas la pregunta ni entables conversación. "
             "DEVUELVE ÚNICAMENTE LA TRADUCCIÓN DIRECTA."
         )
